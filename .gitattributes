@@ -1,0 +1,6 @@
+# Always use LF line endings, regardless of the OS (Prettier and Ruff expect LF).
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.pdf binary

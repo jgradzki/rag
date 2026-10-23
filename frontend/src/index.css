@@ -1,0 +1,332 @@
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --border: #e3e2de;
+  --text: #1f1f1d;
+  --muted: #6f6e69;
+  --accent: #a9502f;
+  --accent-text: #ffffff;
+  --user-bubble: #efece6;
+  --error: #b42318;
+  --error-bg: #fdecea;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  /* native parts (scrollbars, form controls, <details> markers) follow the theme */
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1a;
+    --surface: #262624;
+    --border: #3a3936;
+    --text: #ecebe7;
+    --muted: #a09f99;
+    --accent: #d97757;
+    --accent-text: #1c1c1a;
+    --user-bubble: #33322f;
+    --error: #f97066;
+    --error-bg: #3b1d1a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+a {
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.error {
+  color: var(--error);
+}
+
+/* --- Layout --------------------------------------------------------------- */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* the dynamic viewport excludes mobile browser toolbars, so the composer stays visible */
+  height: 100dvh;
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.banner {
+  padding: 0.5rem 1.25rem;
+  background: var(--error-bg);
+  overflow-wrap: anywhere; /* long file names in upload errors */
+}
+
+.layout {
+  flex: 1;
+  display: grid;
+  /* minmax(0, ...): a long code line or URL must not widen the column past the screen */
+  grid-template-columns: 300px minmax(0, 1fr);
+  min-height: 0;
+}
+
+@media (max-width: 720px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  /* an "auto" row grows with its content - cap it so the chat keeps its space */
+  .documents {
+    max-height: 35vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+/* --- Documents panel ------------------------------------------------------ */
+
+.documents {
+  padding: 1rem;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+
+.documents h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.dropzone {
+  width: 100%;
+  padding: 1.25rem 1rem;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  background: none;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.dropzone:hover:not(:disabled),
+.dropzone:focus-visible,
+.dropzone.dragging {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.icon-button:disabled {
+  opacity: 0.4;
+}
+
+.doc-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.doc-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doc-list .muted {
+  grid-row: 2;
+}
+
+.icon-button {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.icon-button:hover {
+  color: var(--error);
+}
+
+/* --- Chat ----------------------------------------------------------------- */
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.empty {
+  margin: auto;
+  max-width: 520px;
+  text-align: center;
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.examples button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.examples button:hover {
+  border-color: var(--accent);
+}
+
+.message {
+  overflow-wrap: anywhere;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.message pre {
+  overflow-x: auto;
+  overflow-wrap: normal;
+}
+
+.message.user p {
+  margin: 0 0 0 auto;
+  width: fit-content;
+  max-width: 80%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 14px;
+  background: var(--user-bubble);
+}
+
+.message.assistant > p:first-child {
+  margin-top: 0;
+}
+
+.sources {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.sources summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.sources ol {
+  list-style: none;
+  padding: 0;
+}
+
+.sources li {
+  margin-bottom: 0.75rem;
+}
+
+.sources blockquote {
+  margin: 0.25rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.composer {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.composer input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.composer input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.composer button {
+  padding: 0 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.composer button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

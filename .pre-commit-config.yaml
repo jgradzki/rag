@@ -1,0 +1,36 @@
+# Git hooks run on every `git commit`. Setup: `pre-commit install` (see README).
+# Run manually on all files: `pre-commit run --all-files`
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: detect-private-key
+
+  # Backend: lint (with safe auto-fixes) and format. Config: backend/pyproject.toml
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.2
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  # Frontend: use the versions installed in frontend/node_modules (`npm install` first).
+  - repo: local
+    hooks:
+      - id: oxlint
+        name: oxlint (frontend)
+        entry: npm --prefix frontend run lint
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx|mjs|cjs)$
+        pass_filenames: false
+      - id: prettier
+        name: prettier (frontend)
+        entry: npm --prefix frontend run format
+        language: system
+        files: ^frontend/
+        pass_filenames: false

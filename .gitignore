@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Backend runtime data: vector index, downloaded embedding model
+backend/data/
+
+# Secrets
+.env
+
+# IDE
+.idea/
+.vscode/

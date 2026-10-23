@@ -1,0 +1,2 @@
+# Python files outside backend/ (e.g. .claude/skills/*/*.py) use the backend's rules.
+extend = "backend/pyproject.toml"

@@ -1,0 +1,56 @@
+# The whole app in containers: `make up` (or `docker compose up --build -d`),
+# then open http://localhost:8080. Configuration comes from backend/.env.
+
+# A fixed project name, so the volumes are rag_rag-data / rag_ollama-models whatever the
+# folder the repo was cloned into is called.
+name: rag
+
+services:
+  backend:
+    build: ./backend
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      # These override backend/.env, which may hold paths and URLs for running locally.
+      # In a container "localhost" is the container itself, so reach the Ollama running
+      # on the host. For the bundled Ollama (profile below) use OLLAMA_URL=http://ollama:11434.
+      OLLAMA_BASE_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      DATA_DIR: /app/data
+      MODELS_DIR: /app/data/models
+      SAMPLE_DOCS_DIR: /app/sample_docs
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # built into Docker Desktop, needed on Linux
+    volumes:
+      - rag-data:/app/data # vector index + downloaded embedding model
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      # Only this machine can reach the app by default - it has no login. To open it to
+      # your network, set BIND_ADDRESS=0.0.0.0 and add the address you browse to to
+      # CORS_ORIGINS in backend/.env.
+      - "${BIND_ADDRESS:-127.0.0.1}:8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+        # nginx resolves "backend" once at start; restart it when the backend is recreated
+        # (it may get a new IP), or every /api call would fail with 502.
+        restart: true
+    restart: unless-stopped
+
+  # Optional Ollama in a container, for machines without it installed:
+  #   OLLAMA_URL=http://ollama:11434 docker compose --profile ollama up --build -d
+  #   docker compose exec ollama ollama pull qwen3:8b
+  # It runs on the CPU unless GPU access is configured for Docker.
+  ollama:
+    image: ollama/ollama:0.40.8
+    profiles: [ollama]
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  rag-data:
+  ollama-models:
