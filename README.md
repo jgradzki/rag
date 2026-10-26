@@ -218,3 +218,7 @@ GitHub Actions runs the same checks (lock files included), the tests, the fronte
 - [ ] **Conversation memory** — rewrite follow-up questions into standalone queries using chat history
 - [ ] **Hybrid search** — combine vector search with BM25 keyword search for names and codes
 - [ ] **Re-ranking** — re-score retrieved chunks with a cross-encoder before sending them to the LLM
+
+## License
+
+[MIT](LICENSE)
